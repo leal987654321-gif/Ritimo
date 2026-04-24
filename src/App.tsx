@@ -7,7 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 import { auth, signIn, db } from './lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { doc, getDoc, setDoc, collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { LogIn, Send, Sparkles, Calendar, User as UserIcon, LogOut, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { chatWithRitmo } from './services/gemini';
 import ReactMarkdown from 'react-markdown';
