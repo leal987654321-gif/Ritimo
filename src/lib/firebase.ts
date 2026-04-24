@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, setPersistence, browserLocalPersistence } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, setPersistence, browserSessionPersistence } from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
 
@@ -8,8 +8,9 @@ export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
 
 // Handle persistence gracefully for iframe environments
-setPersistence(auth, browserLocalPersistence).catch(() => {
-  // Persistence might fail in some iframe/incognito contexts, fall back to memory
+// browserSessionPersistence is often more reliable in contexts where third-party cookies/IndexedDB might be restricted
+setPersistence(auth, browserSessionPersistence).catch((err) => {
+  console.warn("Auth persistence failed, falling back to memory/default:", err);
 });
 
 export const googleProvider = new GoogleAuthProvider();

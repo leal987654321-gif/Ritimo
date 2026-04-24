@@ -46,39 +46,58 @@ export default function App() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        // Fetch/Create Profile
-        const profileDoc = await getDoc(doc(db, 'users', currentUser.uid));
-        if (profileDoc.exists()) {
-          setProfile(profileDoc.data() as UserProfile);
-        } else {
-          const newProfile = {
-            userId: currentUser.uid,
-            name: currentUser.displayName?.split(' ')[0] || 'Amigo',
-            onboardingComplete: false,
-          };
-          await setDoc(doc(db, 'users', currentUser.uid), newProfile);
-          setProfile(newProfile);
-        }
+    let unsubscribeMsgs: (() => void) | null = null;
 
-        // Listen for messages
-        const msgsQuery = query(collection(db, 'users', currentUser.uid, 'messages'), orderBy('timestamp', 'asc'));
-        const unsubscribeMsgs = onSnapshot(msgsQuery, (snapshot) => {
-          const newMsgs = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as RitualMessage));
-          setMessages(newMsgs);
-        });
-        
-        return () => unsubscribeMsgs();
+    // Fail-safe: force stop loading after 3 seconds if things hang
+    const loadingTimer = setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+
+    const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
+      clearTimeout(loadingTimer);
+      setUser(currentUser);
+      
+      if (currentUser) {
+        try {
+          // Fetch/Create Profile
+          const profileDoc = await getDoc(doc(db, 'users', currentUser.uid));
+          if (profileDoc.exists()) {
+            setProfile(profileDoc.data() as UserProfile);
+          } else {
+            const newProfile: UserProfile = {
+              userId: currentUser.uid,
+              name: currentUser.displayName?.split(' ')[0] || 'Amigo',
+              onboardingComplete: false,
+            };
+            await setDoc(doc(db, 'users', currentUser.uid), newProfile);
+            setProfile(newProfile);
+          }
+
+          // Listen for messages
+          if (unsubscribeMsgs) unsubscribeMsgs();
+          const msgsQuery = query(collection(db, 'users', currentUser.uid, 'messages'), orderBy('timestamp', 'asc'));
+          unsubscribeMsgs = onSnapshot(msgsQuery, (snapshot) => {
+            const newMsgs = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as RitualMessage));
+            setMessages(newMsgs);
+          }, (err) => {
+            console.error("Snapshot error:", err);
+          });
+        } catch (error) {
+          console.error("Auth callback error:", error);
+        }
       } else {
+        if (unsubscribeMsgs) unsubscribeMsgs();
         setProfile(null);
         setMessages([]);
       }
       setLoading(false);
     });
 
-    return () => unsubscribeAuth();
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeMsgs) unsubscribeMsgs();
+      clearTimeout(loadingTimer);
+    };
   }, []);
 
   useEffect(() => {
