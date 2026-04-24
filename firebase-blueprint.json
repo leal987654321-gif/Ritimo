@@ -1,0 +1,74 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Dynamic profile of the user adapted by Ritmo.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "cronotype": { "type": "string", "enum": ["morning", "night", "neutral"] },
+        "energyLevels": {
+          "type": "object",
+          "properties": {
+            "morning": { "type": "integer" },
+            "afternoon": { "type": "integer" },
+            "evening": { "type": "integer" }
+          }
+        },
+        "priorities": { "type": "array", "items": { "type": "string" } },
+        "restrictions": { "type": "array", "items": { "type": "string" } },
+        "habits": { "type": "array", "items": { "type": "string" } },
+        "onboardingComplete": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId"]
+    },
+    "DailyPlan": {
+      "title": "Daily Plan",
+      "description": "Plan generated for a specific day.",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string", "format": "date" },
+        "objective": { "type": "string" },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "time": { "type": "string" },
+              "task": { "type": "string" },
+              "duration": { "type": "integer" },
+              "category": { "type": "string" }
+            }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Message": {
+      "title": "Chat Message",
+      "description": "Conversation between user and Ritmo.",
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "sender": { "type": "string", "enum": ["user", "assistant"] },
+        "timestamp": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Root user document."
+    },
+    "/users/{userId}/plans/{planId}": {
+      "schema": "DailyPlan",
+      "description": "Daily plans for the user."
+    },
+    "/users/{userId}/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Chat messages."
+    }
+  }
+}
