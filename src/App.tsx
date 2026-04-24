@@ -139,11 +139,11 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-[#FDFCF9]">
+      <div className="h-screen w-full flex items-center justify-center bg-[#F8FAFC]">
         <motion.div 
           animate={{ scale: [1, 1.1, 1], opacity: [0.5, 1, 0.5] }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="text-orange-500"
+          className="text-indigo-600"
         >
           <Sparkles size={48} />
         </motion.div>
@@ -153,22 +153,22 @@ export default function App() {
 
   if (!user) {
     return (
-      <div className="h-screen w-full flex flex-col items-center justify-center bg-[#FDFCF9] p-6 text-center">
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-[#F8FAFC] p-6 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="max-w-md w-full space-y-8"
         >
-          <div className="w-20 h-20 bg-orange-100 rounded-3xl flex items-center justify-center mx-auto text-orange-500 mb-4">
+          <div className="w-20 h-20 bg-indigo-600 rounded-3xl flex items-center justify-center mx-auto text-white mb-4 shadow-xl shadow-indigo-200">
             <Sparkles size={40} />
           </div>
-          <h1 className="text-5xl font-display font-bold text-neutral-900 tracking-tight">Ritmo</h1>
-          <p className="text-neutral-500 text-lg">
-            Seu assistente empático para uma rotina que realmente funciona.
+          <h1 className="text-5xl font-display font-bold text-slate-900 tracking-tight">Ritmo</h1>
+          <p className="text-slate-500 text-lg">
+            Seu assistente pessoal inteligente para uma rotina equilibrada e produtiva.
           </p>
           <button
             onClick={signIn}
-            className="w-full py-4 px-6 bg-orange-500 hover:bg-orange-600 text-white rounded-2xl font-semibold transition-all flex items-center justify-center gap-3 shadow-lg shadow-orange-200"
+            className="w-full py-4 px-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-[1.5rem] font-bold transition-all flex items-center justify-center gap-3 shadow-xl shadow-indigo-200"
           >
             <LogIn size={20} />
             Entrar com Google
@@ -179,10 +179,10 @@ export default function App() {
   }
 
   return (
-    <div className="h-screen w-full flex flex-col lg:flex-row bg-[#FDFCF9]">
+    <div className="h-screen w-full flex flex-col lg:flex-row bg-[#F8FAFC]">
       {/* Sidebar / Desktop Nav */}
-      <nav className="fixed bottom-0 lg:relative lg:h-full w-full lg:w-24 bg-white border-t lg:border-t-0 lg:border-r border-neutral-100 p-4 flex lg:flex-col items-center justify-between z-50">
-        <div className="hidden lg:flex w-12 h-12 bg-orange-500 rounded-2xl items-center justify-center text-white mb-8">
+      <nav className="fixed bottom-0 lg:relative lg:h-full w-full lg:w-24 bg-white border-t lg:border-t-0 lg:border-r border-slate-100 p-4 flex lg:flex-col items-center justify-between z-50">
+        <div className="hidden lg:flex w-12 h-12 bg-indigo-600 rounded-2xl items-center justify-center text-white mb-8 shadow-lg shadow-indigo-100">
           <Sparkles size={24} />
         </div>
         
@@ -194,7 +194,7 @@ export default function App() {
 
         <button 
           onClick={() => auth.signOut()}
-          className="hidden lg:flex p-3 text-neutral-400 hover:text-red-500 transition-colors"
+          className="hidden lg:flex p-3 text-slate-300 hover:text-red-500 transition-colors"
         >
           <LogOut size={24} />
         </button>
@@ -202,30 +202,32 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="flex-1 h-full overflow-hidden flex flex-col relative pb-20 lg:pb-0">
-        <header className="p-6 bg-[#FDFCF9]/80 backdrop-blur-sm sticky top-0 z-10 flex items-center justify-between border-b border-neutral-100">
+        <header className="p-8 pb-4 bg-[#F8FAFC]/80 backdrop-blur-sm sticky top-0 z-10 flex items-center justify-between border-b border-slate-100">
           <div>
-            <h2 className="text-2xl font-display font-bold text-neutral-900">
+            <h2 className="text-3xl font-display font-bold text-slate-900 tracking-tight">
               {activeTab === 'chat' && 'Conversar com Ritmo'}
-              {activeTab === 'plan' && 'Seu Plano de Hoje'}
-              {activeTab === 'profile' && 'Seu Perfil Dinâmico'}
+              {activeTab === 'plan' && 'Plano de Hoje'}
+              {activeTab === 'profile' && 'Perfil Dinâmico'}
             </h2>
-            <p className="text-sm text-neutral-400">Olá, {profile?.name} ✨</p>
+            <p className="text-sm font-medium text-slate-400">Olá, {profile?.name} • Otimizando seu ritmo</p>
           </div>
           <div className="lg:hidden">
-             <button onClick={() => auth.signOut()} className="p-2 text-neutral-400"><LogOut size={20} /></button>
+             <button onClick={() => auth.signOut()} className="p-2 text-slate-400"><LogOut size={20} /></button>
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto px-6 py-4" ref={scrollRef}>
+        <div className="flex-1 overflow-y-auto px-8 py-6" ref={scrollRef}>
           {activeTab === 'chat' && (
-            <div className="max-w-3xl mx-auto space-y-6">
+            <div className="max-w-4xl mx-auto space-y-6">
               {messages.length === 0 && (
-                <div className="text-center py-12 space-y-4">
-                  <div className="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mx-auto text-orange-400">
-                     <Sparkles size={32} />
+                <div className="text-center py-20 space-y-6">
+                  <div className="w-20 h-20 bg-indigo-50 rounded-[2rem] flex items-center justify-center mx-auto text-indigo-500 shadow-sm">
+                     <Sparkles size={40} />
                   </div>
-                  <h3 className="text-xl font-display font-bold">Comece sua jornada</h3>
-                  <p className="text-neutral-500">Me conte como foi seu dia ou peça ajuda para organizar o amanhã.</p>
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-display font-bold text-slate-900">Como está seu ritmo hoje?</h3>
+                    <p className="text-slate-500 max-w-sm mx-auto text-lg">Mande uma mensagem para ajustarmos seu plano ou registrar como você está se sentindo.</p>
+                  </div>
                 </div>
               )}
               {messages.map((m) => (
@@ -239,25 +241,27 @@ export default function App() {
                   )}
                 >
                   <div className={cn(
-                    "px-4 py-3 rounded-2xl",
+                    "px-5 py-4 rounded-[1.5rem]",
                     m.sender === 'user' 
-                      ? "bg-orange-500 text-white rounded-tr-none" 
-                      : "bg-white border border-neutral-100 text-neutral-800 shadow-sm rounded-tl-none"
+                      ? "bg-indigo-600 text-white rounded-tr-none shadow-lg shadow-indigo-100" 
+                      : "bg-white border border-slate-100 text-slate-800 shadow-sm rounded-tl-none"
                   )}>
-                    <ReactMarkdown className="prose prose-sm prose-neutral max-w-none">
-                      {m.text}
-                    </ReactMarkdown>
+                    <div className="prose prose-sm prose-slate max-w-none">
+                      <ReactMarkdown>
+                        {m.text}
+                      </ReactMarkdown>
+                    </div>
                   </div>
-                  <span className="text-[10px] text-neutral-300 mt-1 uppercase tracking-wider">
-                    {m.timestamp?.toDate ? m.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Agora'}
+                  <span className="text-[10px] font-bold text-slate-300 mt-2 uppercase tracking-widest pl-1">
+                    {m.timestamp?.toDate ? m.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Sincronizando...'}
                   </span>
                 </motion.div>
               ))}
               {isTyping && (
-                <div className="flex gap-1 items-center text-neutral-300 ml-2">
-                   <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 1 }} className="w-1.5 h-1.5 bg-neutral-300 rounded-full" />
-                   <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 1, delay: 0.2 }} className="w-1.5 h-1.5 bg-neutral-300 rounded-full" />
-                   <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 1, delay: 0.4 }} className="w-1.5 h-1.5 bg-neutral-300 rounded-full" />
+                <div className="flex gap-1.5 items-center text-indigo-200 ml-4 py-2">
+                   <motion.div animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1.5 }} className="w-2 h-2 bg-indigo-400 rounded-full" />
+                   <motion.div animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1.5, delay: 0.2 }} className="w-2 h-2 bg-indigo-400 rounded-full" />
+                   <motion.div animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1.5, delay: 0.4 }} className="w-2 h-2 bg-indigo-400 rounded-full" />
                 </div>
               )}
             </div>
@@ -268,23 +272,24 @@ export default function App() {
         </div>
 
         {activeTab === 'chat' && (
-          <div className="p-6 pt-0">
+          <div className="p-8 pt-0">
             <form 
               onSubmit={handleSendMessage}
-              className="max-w-3xl mx-auto relative"
+              className="max-w-4xl mx-auto relative group"
             >
+              <div className="absolute inset-0 bg-indigo-500/5 blur-2xl rounded-3xl -z-10 group-focus-within:bg-indigo-500/10 transition-all"></div>
               <input
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
-                placeholder="Mande uma mensagem..."
-                className="w-full bg-white border border-neutral-200 rounded-2xl py-4 pl-6 pr-14 focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm"
+                placeholder="Falar com Ritmo..."
+                className="w-full bg-white border border-slate-100 rounded-[1.75rem] py-5 pl-8 pr-16 focus:outline-none focus:ring-4 focus:ring-indigo-500/5 shadow-xl shadow-slate-200/50 text-slate-700 placeholder:text-slate-300"
               />
               <button
                 type="submit"
                 disabled={!inputText.trim()}
-                className="absolute right-2 top-2 h-10 w-10 bg-orange-500 rounded-xl text-white flex items-center justify-center hover:bg-orange-600 disabled:opacity-50 transition-all"
+                className="absolute right-3 top-3 h-12 w-12 bg-indigo-600 rounded-[1.25rem] text-white flex items-center justify-center hover:bg-slate-900 disabled:opacity-50 transition-all shadow-lg"
               >
-                <ChevronRight size={20} />
+                <ChevronRight size={24} />
               </button>
             </form>
           </div>
@@ -299,8 +304,8 @@ function NavButton({ active, icon, onClick }: { active: boolean; icon: React.Rea
     <button
       onClick={onClick}
       className={cn(
-        "p-3 rounded-2xl transition-all",
-        active ? "bg-orange-50 text-orange-500 shadow-sm" : "text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50"
+        "p-4 rounded-2xl transition-all",
+        active ? "bg-indigo-50 text-indigo-600 shadow-sm border border-indigo-100" : "text-slate-300 hover:text-slate-500 hover:bg-slate-50"
       )}
     >
       {icon}
@@ -309,45 +314,79 @@ function NavButton({ active, icon, onClick }: { active: boolean; icon: React.Rea
 }
 
 function DailyPlanView({ profile }: { profile: UserProfile | null }) {
-  // Mocking current plan for now, in a real app would fetch from Firestore /users/{id}/plans
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
-      <div className="ritmo-card p-8 bg-gradient-to-br from-orange-50 to-white">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-orange-500 shadow-sm">
-            <Calendar size={24} />
+    <div className="max-w-4xl mx-auto space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Manhã */}
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">01 • Manhã</span>
+            <div className="h-px flex-1 bg-slate-100"></div>
           </div>
-          <div>
-            <h3 className="text-xl font-display font-bold">Plano de 24 de Abril</h3>
-            <p className="text-neutral-500">Objetivo: Foco e Bem-estar</p>
-          </div>
+          <PlanItemSmall time="09:00" task="Despertar Suave" accent="amber" done />
+          <PlanItemSmall time="11:30" task="Brunch Nutritivo" />
         </div>
-        
-        <div className="space-y-6">
-          <PlanItem time="07:00" task="Acordar e luz natural" done />
-          <PlanItem time="08:30" task="Bloco de Trabalho Focado (Deep Work)" current />
-          <PlanItem time="12:30" task="Almoço Sem Telas" />
-          <PlanItem time="17:00" task="Pequena caminhada" />
-          <PlanItem time="21:30" task="Ritual de Sono" />
+
+        {/* Tarde */}
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">02 • Tarde</span>
+            <div className="h-px flex-1 bg-slate-100"></div>
+          </div>
+          <div className="ritmo-card p-4 bg-indigo-600 text-white shadow-lg shadow-indigo-100">
+            <div className="flex justify-between items-center mb-1">
+              <p className="text-[10px] font-bold opacity-70">14:00 - 17:00</p>
+              <span className="text-[8px] bg-white/20 px-1.5 py-0.5 rounded uppercase font-bold">Foco Total</span>
+            </div>
+            <h4 className="font-bold">Deep Work: Projeto X</h4>
+            <p className="text-[10px] opacity-80 mt-1">Otimização e Documentação.</p>
+          </div>
+          <PlanItemSmall time="17:30" task="Movimento Consciente" accent="emerald" />
+        </div>
+
+        {/* Noite */}
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">03 • Noite</span>
+            <div className="h-px flex-1 bg-slate-100"></div>
+          </div>
+          <PlanItemSmall time="20:00" task="Fluxo Criativo" accent="indigo" />
+          <div className="ritmo-card p-4 bg-slate-900 text-white">
+            <p className="text-[10px] font-bold opacity-50">23:30</p>
+            <h4 className="font-bold italic">Desconexão Digital</h4>
+            <p className="text-[10px] opacity-60 mt-1">Leitura e luz baixa.</p>
+          </div>
         </div>
       </div>
-      
-      <p className="text-center text-neutral-400 text-sm italic">
-        "O sucesso é a soma de pequenos esforços, repetidos dia após dia."
-      </p>
+
+      <div className="ritmo-card p-4 bg-white flex items-center gap-4 py-4 px-6 border-slate-100 shadow-xl shadow-slate-200/50">
+         <div className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-500 flex-shrink-0">
+            <Sparkles size={20} />
+         </div>
+         <p className="text-sm text-slate-600 italic">
+           "Esse plano parece realista para você hoje, {profile?.name}? Queremos ajustar algum bloco?"
+         </p>
+      </div>
     </div>
   );
 }
 
-function PlanItem({ time, task, done, current }: { time: string; task: string; done?: boolean; current?: boolean }) {
+function PlanItemSmall({ time, task, accent, done }: { time: string; task: string; accent?: string; done?: boolean }) {
+  const accentClasses = {
+    amber: "border-l-amber-400",
+    emerald: "border-l-emerald-400",
+    indigo: "border-l-indigo-400",
+    none: "border-l-slate-200"
+  };
+
   return (
     <div className={cn(
-      "flex items-center gap-4 p-4 rounded-2xl transition-all",
-      current ? "bg-white shadow-md border border-orange-100" : "opacity-80"
+      "ritmo-card p-4 border-l-4 shadow-sm",
+      accent ? accentClasses[accent as keyof typeof accentClasses] : accentClasses.none,
+      done && "opacity-60"
     )}>
-      <div className="text-sm font-mono text-neutral-400 w-12">{time}</div>
-      <div className={cn("flex-1 font-medium", done && "line-through text-neutral-300")}>{task}</div>
-      {done ? <CheckCircle2 className="text-green-500" /> : current ? <Sparkles className="text-orange-500" /> : <div className="w-6 h-6 rounded-full border-2 border-neutral-100" />}
+      <p className="text-[10px] font-bold text-slate-400">{time}</p>
+      <h4 className={cn("font-bold text-sm", done && "line-through")}>{task}</h4>
     </div>
   );
 }
@@ -355,38 +394,41 @@ function PlanItem({ time, task, done, current }: { time: string; task: string; d
 function ProfileView({ profile }: { profile: UserProfile | null }) {
   if (!profile) return null;
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <StatsCard label="Cronotipo" value={profile.cronotype || 'Aprendendo...'} icon="🌙" />
-        <StatsCard label="Energia" value="Otimista" icon="⚡" />
+    <div className="max-w-4xl mx-auto space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <StatsCard label="Seu Cronotipo" value={profile.cronotype === 'morning' ? 'Cotovia' : profile.cronotype === 'night' ? 'Coruja' : 'Humano'} icon={profile.cronotype === 'night' ? '🦉' : '☀️'} color="bg-amber-50" textColor="text-amber-700" />
+        <StatsCard label="Foco Atual" value="Resiliência Espelhada" icon="🛡️" color="bg-indigo-50" textColor="text-indigo-700" />
       </div>
 
-      <div className="ritmo-card p-6 space-y-4">
-         <h3 className="text-lg font-bold">O que sei sobre você</h3>
-         <div className="flex flex-wrap gap-2">
-            {['Focado pela manhã', 'Café às 10h', 'Evita trânsito', 'Adora ler'].map(tag => (
-              <span key={tag} className="px-3 py-1 bg-neutral-100 rounded-full text-sm text-neutral-600">
+      <div className="ritmo-card p-8">
+         <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-display font-bold text-slate-900">DNA de Rotina</h3>
+            <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest px-2 py-1 bg-indigo-50 rounded-full">Atualizado agora</span>
+         </div>
+         <div className="flex flex-wrap gap-3">
+            {['Focado pela manhã', 'Café às 10h', 'Evita trânsito', 'Adora ler', 'Pico de energia às 20h', 'Desconexão tardia'].map(tag => (
+              <span key={tag} className="px-4 py-2 bg-slate-50 rounded-2xl text-sm font-semibold text-slate-600 border border-slate-100">
                 {tag}
               </span>
             ))}
          </div>
       </div>
 
-      <div className="p-6 text-center text-neutral-400">
-        Continuo aprendendo seu ritmo a cada conversa. 📈
+      <div className="p-8 text-center text-slate-400 text-sm italic">
+        Continuo mapeando seu ritmo pessoal a cada interação. Sua evolução é gradual. 📈
       </div>
     </div>
   );
 }
 
-function StatsCard({ label, value, icon }: { label: string; value: string; icon: string }) {
+function StatsCard({ label, value, icon, color, textColor }: { label: string; value: string; icon: string, color: string, textColor: string }) {
   return (
-    <div className="ritmo-card p-6 flex items-center justify-between">
+    <div className={cn("ritmo-card p-8 flex items-center justify-between", color)}>
       <div>
-        <p className="text-xs text-neutral-400 uppercase tracking-wider mb-1 font-semibold">{label}</p>
-        <p className="text-xl font-display font-bold">{value}</p>
+        <p className={cn("text-[10px] font-bold uppercase tracking-wider mb-2", textColor)}>{label}</p>
+        <p className="text-2xl font-display font-bold text-slate-900">{value}</p>
       </div>
-      <span className="text-2xl">{icon}</span>
+      <span className="text-4xl filter drop-shadow-sm">{icon}</span>
     </div>
   );
 }

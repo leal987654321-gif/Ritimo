@@ -9,7 +9,7 @@
 
 @layer base {
   body {
-    @apply bg-[#FDFCF9] text-[#1A1A1A] font-sans antialiased;
+    @apply bg-[#F8FAFC] text-slate-800 font-sans antialiased;
   }
 }
 
@@ -18,5 +18,5 @@
 }
 
 .ritmo-card {
-  @apply bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-neutral-100;
+  @apply bg-white rounded-[2rem] shadow-sm border border-slate-100;
 }
