@@ -8,10 +8,16 @@ export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
 
 // Handle persistence gracefully for iframe environments
-// browserSessionPersistence is often more reliable in contexts where third-party cookies/IndexedDB might be restricted
-setPersistence(auth, browserSessionPersistence).catch((err) => {
-  console.warn("Auth persistence failed, falling back to memory/default:", err);
-});
+// We try browserSessionPersistence which is usually more reliable in restrictive environments
+const initPersistence = async () => {
+  try {
+    await setPersistence(auth, browserSessionPersistence);
+    console.log("Auth persistence set to session");
+  } catch (err) {
+    console.warn("Auth persistence failed, falling back to memory:", err);
+  }
+};
+initPersistence();
 
 export const googleProvider = new GoogleAuthProvider();
 

@@ -7,8 +7,8 @@ import { useState, useEffect, useRef } from 'react';
 import { auth, signIn, db } from './lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { doc, getDoc, setDoc, collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
-import { motion, AnimatePresence } from 'motion/react';
-import { LogIn, Send, Sparkles, Calendar, User as UserIcon, LogOut, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { LogIn, Send, Sparkles, Calendar, User as UserIcon, LogOut, ChevronRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import { chatWithRitmo } from './services/gemini';
 import ReactMarkdown from 'react-markdown';
 import { clsx, type ClassValue } from 'clsx';
@@ -38,6 +38,7 @@ export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [initError, setInitError] = useState<string | null>(null);
   const [messages, setMessages] = useState<RitualMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -54,6 +55,7 @@ export default function App() {
     }, 3000);
 
     const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
+      console.log("Auth State Changed:", currentUser?.uid || "No user");
       clearTimeout(loadingTimer);
       setUser(currentUser);
       
@@ -81,15 +83,21 @@ export default function App() {
             setMessages(newMsgs);
           }, (err) => {
             console.error("Snapshot error:", err);
+            setInitError("Erro ao sincronizar mensagens. Tente recarregar.");
           });
-        } catch (error) {
+        } catch (error: any) {
           console.error("Auth callback error:", error);
+          setInitError(error.message || "Erro na conexão com o banco de dados.");
         }
       } else {
         if (unsubscribeMsgs) unsubscribeMsgs();
         setProfile(null);
         setMessages([]);
       }
+      setLoading(false);
+    }, (error) => {
+      console.error("onAuthStateChanged Error:", error);
+      setInitError("Erro ao verificar autenticação. Verifique se cookies de terceiros estão permitidos.");
       setLoading(false);
     });
 
@@ -156,16 +164,40 @@ export default function App() {
     }
   };
 
-  if (loading) {
+  if (loading || initError) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-[#F8FAFC]">
-        <motion.div 
-          animate={{ scale: [1, 1.1, 1], opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="text-indigo-600"
-        >
-          <Sparkles size={48} />
-        </motion.div>
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-[#F8FAFC] p-8 text-center">
+        {!initError ? (
+          <motion.div 
+            animate={{ scale: [1, 1.1, 1], opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="text-indigo-600"
+          >
+            <Sparkles size={48} />
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="max-w-md p-8 bg-white rounded-3xl shadow-xl shadow-red-100 border border-red-50 space-y-4"
+          >
+            <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto text-red-500">
+               <AlertCircle size={32} />
+            </div>
+            <h3 className="text-xl font-display font-bold text-slate-900">Ops! Algo deu errado</h3>
+            <p className="text-slate-500 text-sm leading-relaxed">
+              {initError}
+              <br /><br />
+              Certifique-se de que cookies de terceiros estão habilitados no navegador para o Firebase funcionar corretamente.
+            </p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="w-full py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all"
+            >
+              Tentar Novamente
+            </button>
+          </motion.div>
+        )}
       </div>
     );
   }
