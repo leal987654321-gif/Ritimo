@@ -44,7 +44,29 @@ export default function App() {
   const [isTyping, setIsTyping] = useState(false);
   const [activeTab, setActiveTab] = useState<'chat' | 'plan' | 'profile'>('chat');
   
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleSignIn = async () => {
+    setIsLoggingIn(true);
+    setLoginError(null);
+    try {
+      await signIn();
+    } catch (error: any) {
+      console.error("Sign in error:", error);
+      if (error.code === 'auth/popup-blocked') {
+        setLoginError("O popup de login foi bloqueado pelo seu navegador. Por favor, permita popups para este site.");
+      } else if (error.code === 'auth/unauthorized-domain') {
+        setLoginError("Este domínio não está autorizado no Firebase. Adicione o domínio do Vercel nas configurações de Autenticação do Firebase.");
+      } else {
+        setLoginError("Erro ao entrar com Google. Tente novamente ou verifique sua conexão.");
+      }
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
 
   useEffect(() => {
     let unsubscribeMsgs: (() => void) | null = null;
@@ -217,12 +239,32 @@ export default function App() {
             Seu assistente pessoal inteligente para uma rotina equilibrada e produtiva.
           </p>
           <button
-            onClick={signIn}
-            className="w-full py-4 px-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-[1.5rem] font-bold transition-all flex items-center justify-center gap-3 shadow-xl shadow-indigo-200"
+            onClick={handleSignIn}
+            disabled={isLoggingIn}
+            className="w-full py-4 px-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-[1.5rem] font-bold transition-all flex items-center justify-center gap-3 shadow-xl shadow-indigo-200 disabled:opacity-70 disabled:cursor-wait"
           >
-            <LogIn size={20} />
-            Entrar com Google
+            {isLoggingIn ? (
+              <motion.div 
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              >
+                <Sparkles size={20} />
+              </motion.div>
+            ) : (
+              <LogIn size={20} />
+            )}
+            {isLoggingIn ? 'Entrando...' : 'Entrar com Google'}
           </button>
+          
+          {loginError && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm font-medium"
+            >
+              {loginError}
+            </motion.div>
+          )}
         </motion.div>
       </div>
     );

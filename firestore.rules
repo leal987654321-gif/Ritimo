@@ -21,19 +21,19 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if isOwner(userId);
       allow create: if isOwner(userId) 
-        && request.resource.data.keys().hasAll(['userId'])
-        && request.resource.data.userId == request.auth.uid;
+        && request.resource.data.userId == userId
+        && request.resource.data.name is string;
       allow update: if isOwner(userId)
         && request.resource.data.userId == resource.data.userId;
 
       match /plans/{planId} {
         allow read: if isOwner(userId);
-        allow write: if isOwner(userId) && isValidId(planId);
+        allow write: if isOwner(userId);
       }
 
       match /messages/{messageId} {
         allow read: if isOwner(userId);
-        allow create: if isOwner(userId) && isValidId(messageId);
+        allow write: if isOwner(userId);
       }
     }
   }
