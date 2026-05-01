@@ -1,6 +1,18 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string });
+let aiInstance: GoogleGenAI | null = null;
+
+function getAi() {
+  if (!aiInstance) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey || apiKey === "undefined") {
+      console.warn("GEMINI_API_KEY is missing. AI features will be disabled.");
+      return null;
+    }
+    aiInstance = new GoogleGenAI({ apiKey });
+  }
+  return aiInstance;
+}
 
 export const RITMO_SYSTEM_INSTRUCTION = `
 Você é "Ritmo", um assistente pessoal inteligente, empático e altamente adaptativo. Seu objetivo principal é ajudar o usuário a construir e manter uma rotina diária que realmente funcione para a vida dele, melhorando gradualmente sua energia, produtividade, saúde e bem-estar.
@@ -44,6 +56,9 @@ export async function chatWithRitmo(messages: { role: string; content: string }[
     parts: [{ text: m.content }]
   }));
 
+  const ai = getAi();
+  if (!ai) return "O sistema de IA não está configurado. Por favor, adicione a GEMINI_API_KEY.";
+
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
@@ -60,31 +75,39 @@ export async function chatWithRitmo(messages: { role: string; content: string }[
 }
 
 export async function extractProfileUpdates(messages: { role: string; content: string }[], currentProfile: any) {
-  const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
-    contents: `Com base nesta conversa recente: ${JSON.stringify(messages.slice(-5))}, e no perfil atual: ${JSON.stringify(currentProfile)}, identifique se houve alguma atualização ou nova informação sobre o usuário (cronotipo, energia, prioridades, restrições, hábitos). Retorne o perfil COMPLETO E ATUALIZADO se houver mudanças significativas, ou o mesmo perfil se nada mudou.`,
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: Type.OBJECT,
-        properties: {
-          name: { type: Type.STRING },
-          cronotype: { type: Type.STRING },
-          energyLevels: {
-            type: Type.OBJECT,
-            properties: {
-              morning: { type: Type.INTEGER },
-              afternoon: { type: Type.INTEGER },
-              evening: { type: Type.INTEGER }
-            }
-          },
-          priorities: { type: Type.ARRAY, items: { type: Type.STRING } },
-          restrictions: { type: Type.ARRAY, items: { type: Type.STRING } },
-          habits: { type: Type.ARRAY, items: { type: Type.STRING } },
-          onboardingComplete: { type: Type.BOOLEAN }
+  const ai = getAi();
+  if (!ai) return currentProfile;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: `Com base nesta conversa recente: ${JSON.stringify(messages.slice(-5))}, e no perfil atual: ${JSON.stringify(currentProfile)}, identifique se houve alguma atualização ou nova informação sobre o usuário (cronotipo, energia, prioridades, restrições, hábitos). Retorne o perfil COMPLETO E ATUALIZADO se houver mudanças significativas, ou o mesmo perfil se nada mudou.`,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            name: { type: Type.STRING },
+            cronotype: { type: Type.STRING },
+            energyLevels: {
+              type: Type.OBJECT,
+              properties: {
+                morning: { type: Type.INTEGER },
+                afternoon: { type: Type.INTEGER },
+                evening: { type: Type.INTEGER }
+              }
+            },
+            priorities: { type: Type.ARRAY, items: { type: Type.STRING } },
+            restrictions: { type: Type.ARRAY, items: { type: Type.STRING } },
+            habits: { type: Type.ARRAY, items: { type: Type.STRING } },
+            onboardingComplete: { type: Type.BOOLEAN }
+          }
         }
       }
-    }
-  });
-  return JSON.parse(response.text || '{}');
+    });
+    return JSON.parse(response.text || '{}');
+  } catch (error) {
+    console.error("Profile extraction error:", error);
+    return currentProfile;
+  }
 }

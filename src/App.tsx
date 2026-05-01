@@ -9,7 +9,7 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import { doc, getDoc, setDoc, collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LogIn, Send, Sparkles, Calendar, User as UserIcon, LogOut, ChevronRight, CheckCircle2, AlertCircle } from 'lucide-react';
-import { chatWithRitmo } from './services/gemini';
+import { chatWithRitmo, extractProfileUpdates } from './services/gemini';
 import ReactMarkdown from 'react-markdown';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -148,9 +148,8 @@ export default function App() {
       });
 
       // 5. Update profile asynchronously
-      const updatedProfile = await import('./services/gemini').then(m => 
-        m.extractProfileUpdates([...history, { role: 'assistant', content: ritmoResponse }], profile)
-      );
+      const updatedProfile = await extractProfileUpdates([...history, { role: 'assistant', content: ritmoResponse }], profile);
+      
       if (updatedProfile && JSON.stringify(updatedProfile) !== JSON.stringify(profile)) {
         const finalProfile = { ...profile, ...updatedProfile, userId: user.uid };
         await setDoc(doc(db, 'users', user.uid), finalProfile);
