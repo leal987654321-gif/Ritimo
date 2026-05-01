@@ -4,12 +4,17 @@ let aiInstance: GoogleGenAI | null = null;
 
 function getAi() {
   if (!aiInstance) {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey || apiKey === "undefined") {
-      console.warn("GEMINI_API_KEY is missing. AI features will be disabled.");
+    try {
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (!apiKey || apiKey === "undefined") {
+        console.warn("GEMINI_API_KEY is missing. AI features will be disabled.");
+        return null;
+      }
+      aiInstance = new GoogleGenAI({ apiKey });
+    } catch (e) {
+      console.error("Failed to initialize GoogleGenAI:", e);
       return null;
     }
-    aiInstance = new GoogleGenAI({ apiKey });
   }
   return aiInstance;
 }

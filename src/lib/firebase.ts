@@ -17,7 +17,9 @@ const initPersistence = async () => {
     console.warn("Auth persistence failed, falling back to memory:", err);
   }
 };
-initPersistence();
+
+// Only try initializing persistence, but don't block
+initPersistence().catch(console.error);
 
 export const googleProvider = new GoogleAuthProvider();
 
@@ -30,16 +32,3 @@ export async function signIn() {
     throw error;
   }
 }
-
-async function testConnection() {
-  try {
-    // Basic connectivity test
-    await getDocFromServer(doc(db, 'test', 'connection'));
-  } catch (error: any) {
-    if (error?.message?.includes('the client is offline')) {
-      console.error("Please check your Firebase configuration or internet connection.");
-    }
-  }
-}
-
-testConnection();
